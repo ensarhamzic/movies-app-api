@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Movies_API.Data;
+using Movies_API.Data.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +18,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8
-            .GetBytes(builder.Configuration.GetSection("jwt_token").Value)),
+            .GetBytes(builder.Configuration.GetSection("JWT:Token").Value)),
             ValidateIssuer = false,
             ValidateAudience = false,
         };
@@ -26,7 +28,10 @@ builder.Services.AddCors(c =>
     c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
-// services
+builder.Services.AddDbContext<AppDbContext>();
+
+builder.Services.AddTransient<UserService>();
+builder.Services.AddTransient<CollectionService>();
 
 builder.Services.AddHttpContextAccessor();
 
