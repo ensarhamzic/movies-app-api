@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>movies_api</RootNamespace>
+    <RootNamespace>Movies_API</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
