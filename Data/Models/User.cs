@@ -17,6 +17,7 @@ namespace Movies_API.Data.Models
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public ICollection<Collection> Collections { get; set; }
+        public ICollection<Favorite> Favorites { get; set; }
 
     }
 }

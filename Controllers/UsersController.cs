@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Movies_API.Data.Services;
 using Movies_API.Data.ViewModels;
@@ -42,6 +43,27 @@ namespace Movies_API.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [HttpGet("favorites"), Authorize]
+        public IActionResult GetFavorites()
+        {
+            try
+            {
+                var favorites = userService.GetFavorites();
+                return Ok(favorites);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("verify"), Authorize]
+        public IActionResult VerifyToken()
+        {
+            var user = userService.VerifyToken();
+            return Ok(new {user});
         }
     }
 }

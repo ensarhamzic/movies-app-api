@@ -10,5 +10,6 @@ namespace Movies_API.Data.Models
         public string Name { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
+        public ICollection<Movie> Movies { get; set; }
     }
 }

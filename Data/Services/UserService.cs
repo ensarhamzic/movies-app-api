@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Movies_API.Data.Models;
 using Movies_API.Data.ViewModels;
@@ -10,13 +11,15 @@ namespace Movies_API.Data.Services
 {
     public class UserService
     {
+        private IHttpContextAccessor httpContextAccessor;
         private AppDbContext dbContext;
         private IConfiguration configuration;
 
-        public UserService(AppDbContext dbContext, IConfiguration configuration)
+        public UserService(AppDbContext dbContext, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             this.dbContext = dbContext;
             this.configuration = configuration;
+            this.httpContextAccessor = httpContextAccessor;
         }
         public object RegisterUser(UserRegisterVM request)
         {
@@ -51,6 +54,24 @@ namespace Movies_API.Data.Services
             var token = CreateToken(foundUser);
             UserVM user = (UserVM)foundUser;
             return new { user, token };
+        }
+
+        public UserVM VerifyToken()
+        {
+            var userId = GetAuthUserId();
+            var user = dbContext.Users.FirstOrDefault(u => u.Id == userId);
+            return (UserVM)user;
+        }
+        public List<Favorite>? GetFavorites()
+        {
+            var userId = GetAuthUserId();
+            var favorites = dbContext.Favorites.Where(f => f.UserId == userId).ToList();
+            return favorites;
+        }
+
+        private int GetAuthUserId()
+        {
+            return int.Parse(httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.PrimarySid));
         }
 
         public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
@@ -89,5 +110,7 @@ namespace Movies_API.Data.Services
 
             return jwt;
         }
+
+
     }
 }

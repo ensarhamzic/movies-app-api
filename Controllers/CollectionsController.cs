@@ -30,5 +30,48 @@ namespace Movies_API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet, Authorize]
+        public IActionResult GetCollections()
+        {
+            try
+            {
+                var collections = collectionService.GetCollections();
+                return Ok(collections);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("add-movie"), Authorize]
+        public IActionResult AddMovieToCollection([FromBody] MovieVM request)
+        {
+            try
+            {
+                var response = collectionService.AddMovieToCollection(request);
+                return Created(nameof(response), response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("favorize"), Authorize]
+        public IActionResult AddMovieToFavorites([FromBody] FavoriteVM request)
+        {
+            try
+            {
+                var response = collectionService.AddMovieToFavorites(request);
+                return Created(nameof(response), response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

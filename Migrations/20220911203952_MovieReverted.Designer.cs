@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Movies_API.Data;
 
@@ -11,9 +12,10 @@ using Movies_API.Data;
 namespace Movies_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220911203952_MovieReverted")]
+    partial class MovieReverted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,21 +47,6 @@ namespace Movies_API.Migrations
                     b.ToTable("Collections");
                 });
 
-            modelBuilder.Entity("Movies_API.Data.Models.Favorite", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Favorites");
-                });
-
             modelBuilder.Entity("Movies_API.Data.Models.Movie", b =>
                 {
                     b.Property<int>("Id")
@@ -67,6 +54,23 @@ namespace Movies_API.Migrations
 
                     b.Property<int>("CollectionId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Overview")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PosterURL")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Rating")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id", "CollectionId");
 
@@ -124,36 +128,20 @@ namespace Movies_API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Movies_API.Data.Models.Favorite", b =>
-                {
-                    b.HasOne("Movies_API.Data.Models.User", "User")
-                        .WithMany("Favorites")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Movies_API.Data.Models.Movie", b =>
                 {
-                    b.HasOne("Movies_API.Data.Models.Collection", null)
-                        .WithMany("Movies")
+                    b.HasOne("Movies_API.Data.Models.Collection", "Collection")
+                        .WithMany()
                         .HasForeignKey("CollectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("Movies_API.Data.Models.Collection", b =>
-                {
-                    b.Navigation("Movies");
+                    b.Navigation("Collection");
                 });
 
             modelBuilder.Entity("Movies_API.Data.Models.User", b =>
                 {
                     b.Navigation("Collections");
-
-                    b.Navigation("Favorites");
                 });
 #pragma warning restore 612, 618
         }
