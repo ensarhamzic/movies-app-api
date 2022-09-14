@@ -11,5 +11,6 @@ namespace Movies_API.Data.Models
         public int UserId { get; set; }
         public User User { get; set; }
         public ICollection<Movie> Movies { get; set; }
+        public PublishCollection? Publish { get; set; }
     }
 }

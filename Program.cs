@@ -32,6 +32,7 @@ builder.Services.AddDbContext<AppDbContext>();
 
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<CollectionService>();
+builder.Services.AddTransient<PublishService>();
 
 builder.Services.AddHttpContextAccessor();
 
