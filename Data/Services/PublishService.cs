@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Movies_API.Data.Models;
 using Movies_API.Data.ViewModels;
 using System.Security.Claims;
@@ -45,6 +46,15 @@ namespace Movies_API.Data.Services
             var userId = GetAuthUserId();
             var foundPublish = dbContext.Publishes.FirstOrDefault(p => p.UserId == userId);
             return foundPublish;
+        }
+
+        public object GetPublishByName(PublishVM request)
+        {
+            var foundPublish = dbContext.Publishes.FirstOrDefault(p => p.Name == request.Name);
+            if (foundPublish == null) throw new Exception("Publishes collections not found");
+            var collections = dbContext.PublishedCollections.Include(pc => pc.Collection).ThenInclude(c => c.Movies).Where(pc => pc.PublishId == foundPublish.Id).Select(pc => new { collection = pc.Collection}).ToList();
+            if (collections.Count == 0) throw new Exception("No collections published yet!");
+            return collections;
         }
 
         public string PublishCollections(PublishCollectionsVM request)

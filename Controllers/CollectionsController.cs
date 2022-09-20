@@ -69,7 +69,34 @@ namespace Movies_API.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPut, Authorize]
+        public IActionResult RenameCollection([FromBody] RenameCollectionVM request)
+        {
+            try
+            {
+                var response = collectionService.RenameCollection(request);
+                return Ok(new {message = response});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete, Authorize]
+        public IActionResult DeleteCollection([FromBody] DeleteCollectionVM request)
+        {
+            try
+            {
+                var response = collectionService.DeleteCollection(request);
+                return Ok(new { message = response });
+            }
+            catch (Exception ex)
+            {
                 return BadRequest(new { message = ex.Message });
             }
         }

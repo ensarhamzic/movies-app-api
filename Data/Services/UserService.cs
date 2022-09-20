@@ -69,6 +69,15 @@ namespace Movies_API.Data.Services
             return favorites;
         }
 
+        public string DeleteAccount()
+        {
+            var userId = GetAuthUserId();
+            var foundUser = dbContext.Users.FirstOrDefault(u => u.Id == userId);
+            dbContext.Users.Remove(foundUser);
+            dbContext.SaveChanges();
+            return "Account permanently deleted!";
+        }
+
         private int GetAuthUserId()
         {
             return int.Parse(httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.PrimarySid));

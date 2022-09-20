@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Movies_API.Data.Models;
 using Movies_API.Data.ViewModels;
 using System.Reflection.Metadata.Ecma335;
@@ -90,6 +91,38 @@ namespace Movies_API.Data.Services
             dbContext.Remove(foundFavorite);
             dbContext.SaveChanges();
             return new { message = "Movie removed from favorites" };
+        }
+
+        public string RenameCollection(RenameCollectionVM request)
+        {
+            var userId = GetAuthUserId();
+            var foundCollection = dbContext.Collections.FirstOrDefault(c => c.Id == request.Id);
+            if (foundCollection == null) throw new Exception("Collection not found!");
+            if (foundCollection.UserId != userId) throw new Exception("Cannot rename this collection!");
+            var collectionExists = dbContext.Collections
+                .FirstOrDefault(c => c.Name == request.Name
+                && c.Id != foundCollection.Id
+                && c.UserId == userId);
+            if (collectionExists != null) throw new Exception("You already have one collection with this name");
+
+            foundCollection.Name = request.Name;
+            dbContext.SaveChanges();
+            return "Collection saved";
+        }
+
+        public string DeleteCollection(DeleteCollectionVM request)
+        {
+            var userId = GetAuthUserId();
+            var foundCollection = dbContext.Collections
+                .FirstOrDefault(c => c.Id == request.Id
+                && c.UserId == userId);
+            if (foundCollection == null) throw new Exception("Collection does not exist");
+            var foundPublished = dbContext.PublishedCollections
+                .FirstOrDefault(pc => pc.CollectionId == foundCollection.Id);
+            if (foundPublished != null) dbContext.PublishedCollections.Remove(foundPublished);
+            dbContext.Remove(foundCollection);
+            dbContext.SaveChanges();
+            return "Collection deleted!";
         }
 
         private int GetAuthUserId()

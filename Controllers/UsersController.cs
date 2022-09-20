@@ -59,6 +59,20 @@ namespace Movies_API.Controllers
             }
         }
 
+        [HttpDelete, Authorize]
+        public IActionResult DeleteAccount()
+        {
+            try
+            {
+                var response = userService.DeleteAccount();
+                return Ok(new {message = response});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost("verify"), Authorize]
         public IActionResult VerifyToken()
         {

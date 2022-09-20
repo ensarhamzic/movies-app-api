@@ -31,6 +31,20 @@ namespace Movies_API.Controllers
             }
         }
 
+        [HttpGet("collections")]
+        public IActionResult GetPublishByName([FromQuery] PublishVM request)
+        {
+            try
+            {
+                var collections = publishService.GetPublishByName(request);
+                return Ok(collections);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost, Authorize]
         public IActionResult SetPublishName([FromBody] PublishVM request)
         {
