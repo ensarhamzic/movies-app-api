@@ -60,12 +60,40 @@ namespace Movies_API.Controllers
         }
 
         [HttpDelete, Authorize]
-        public IActionResult DeleteAccount()
+        public IActionResult DeleteAccount([FromBody] DeleteAccountVM request)
         {
             try
             {
-                var response = userService.DeleteAccount();
+                var response = userService.DeleteAccount(request);
                 return Ok(new {message = response});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPatch("password"), Authorize]
+        public IActionResult ChangePassword([FromBody] ChangePasswordVM request)
+        {
+            try
+            {
+                var response = userService.ChangePassword(request);
+                return Ok(new { message = response });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        
+        [HttpPatch("name"), Authorize]
+        public IActionResult ChangeName([FromBody] ChangeNameVM request)
+        {
+            try
+            {
+                var response = userService.ChangeName(request);
+                return Ok(new { message = response });
             }
             catch (Exception ex)
             {

@@ -69,13 +69,39 @@ namespace Movies_API.Data.Services
             return favorites;
         }
 
-        public string DeleteAccount()
+        public string DeleteAccount(DeleteAccountVM request)
         {
             var userId = GetAuthUserId();
             var foundUser = dbContext.Users.FirstOrDefault(u => u.Id == userId);
+            var passwordValid = VerifyPasswordHash(request.Password, foundUser.PasswordHash, foundUser.PasswordSalt);
+            if (!passwordValid) throw new Exception("Password not correct!");
             dbContext.Users.Remove(foundUser);
             dbContext.SaveChanges();
             return "Account permanently deleted!";
+        }
+
+        public string ChangePassword(ChangePasswordVM request)
+        {
+            var userId = GetAuthUserId();
+            var foundUser = dbContext.Users.FirstOrDefault(u => u.Id == userId);
+            if (request.NewPassword != request.RepeatPassword) throw new Exception("Passwords don't match");
+            if (!VerifyPasswordHash(request.CurrentPassword, foundUser.PasswordHash, foundUser.PasswordSalt)) throw new Exception("Current password not correct");
+            CreatePasswordHash(request.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            foundUser.PasswordHash = passwordHash;
+            foundUser.PasswordSalt = passwordSalt;
+            dbContext.SaveChanges();
+            return "Password successfully changed!";
+        }
+
+        public string ChangeName(ChangeNameVM request)
+        {
+            var userId = GetAuthUserId();
+            var foundUser = dbContext.Users.FirstOrDefault(u => u.Id == userId);
+            foundUser.FirstName = request.FirstName;
+            foundUser.LastName = request.LastName;
+            dbContext.SaveChanges();
+            return "Name successfully changed!";
+
         }
 
         private int GetAuthUserId()
